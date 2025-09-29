@@ -4,6 +4,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { createStatefulServer } from "@smithery/sdk/server/stateful.js"
 import { instrumentServer } from "@shinzolabs/instrumentation-mcp"
+import type { Request, Response } from "express"
 import { z } from "zod"
 
 function formatResponse(data: any) {
@@ -2528,4 +2529,15 @@ await stdioServer.connect(transport)
 // Streamable HTTP Server
 const { app } = createStatefulServer(createServer)
 const PORT = process.env.PORT || 3000
+app.get("/health", (_req: Request, res: Response) => {
+  res.status(200).json({
+    status: "ok",
+    server: {
+      name: "HubSpot-MCP",
+      version: "2.0.5"
+    },
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  })
+})
 app.listen(PORT)
